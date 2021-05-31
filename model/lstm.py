@@ -2,10 +2,11 @@ import torch
 
 class LSTMModel(torch.nn.Module):
 	def __init__(self):
-		pass
+		super().__init__()
+		self.core = None
 
-	def forward(self):
-		pass
+	def forward(self, x):
+		return self.core(x)
 
 def main():
 	pass
