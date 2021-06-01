@@ -1,4 +1,5 @@
 from model.bert_embedding import BERTEmbedding
+from model.torch_embedding import TorchEmbedding
 from model.lstm import LSTMModel
 import torch
 import math
@@ -9,12 +10,15 @@ device = 'cuda:0'
 batch_size = 13
 class_num = 7
 epoch = 20
-fix_embedding = False
-is_finetune = True
+fix_embedding = True
+is_finetune = False
+
+use_embedding = BERTEmbedding()
+use_core = LSTMModel()
 
 data_file_path_prefix = '/home/qianhoude/sentiment/data/processed_isear_v2/'
 data_file_path_suffix = ['isear_test.txt', 'isear_train.txt', 'isear_valid.txt']
-model_save_path = '/home/qianhoude/sentiment/save/LSTM_finetune.pth'
+model_save_path = '/home/qianhoude/sentiment/save/LSTM.pth'
 finetune_model_path = '/home/qianhoude/sentiment/save/LSTM.pth'
 
 # The function to get the learning rate
@@ -76,8 +80,8 @@ def main():
 	model = None
 	if not is_finetune:
 		model = FullModel(
-			embedding = BERTEmbedding(),
-			core_model = LSTMModel()
+			embedding = use_embedding,
+			core_model = use_core
 		).to(device)
 	else:
 		model = torch.load(finetune_model_path)
@@ -92,6 +96,9 @@ def main():
 		optim = torch.optim.Adam(lr = lr_func(epoch_num), params = model.parameters())
 		
 		# Train the model
+		model.train()
+		loss_tot = 0
+		acc = 0
 		for i in tqdm(range(int(len(train_data) / batch_size))):
 			optim.zero_grad()
 
@@ -102,17 +109,30 @@ def main():
 
 			# Get the loss and predict
 			output = model(input_batch, labels)
-			output['loss'].backward()
+			loss = output['loss']
+			loss_tot += loss.item()
+			loss.backward()
+
+			# Get the acc on train set
+			for ind, res in enumerate(output['output']):
+				acc += 1 if res == labels[ind] else 0
 
 			optim.step()
+
+		# Print data of training
+		print('Traning ended. The loss is %.6f. The acc on train set is %.6f%%.' % (
+			loss_tot / len(train_data), acc / len(train_data) * 100
+		))
 
 		# Save the model
 		if epoch_num == epoch - 1:
 			torch.save(model, model_save_path)
 
 		# Test the model
+		model.eval()
 		acc = 0
 		confusion_mat = [[0] * class_num for _ in range(class_num)]
+		loss_tot = 0
 		for text in tqdm(test_data):
 			# Preprocess
 			input_sentence = text.split(' # ')[2]
@@ -124,6 +144,7 @@ def main():
 			# Record
 			acc += 1 if model_predict['output'][0] == label else 0
 			confusion_mat[label][model_predict['output'][0]] += 1
+			loss_tot += model_predict['loss'].item()
 
 		# Sum up the results
 		acc /= len(test_data)
@@ -162,8 +183,8 @@ def main():
 		micro_f = 2 * precision_avg * recall_avg / (precision_avg + recall_avg) if precision_avg + recall_avg else math.inf
 		macro_f = sum(f_val_list) / class_num
 
-		print('Now at epoch %d. acc is %.6f%%. micro_avg is %.6f%%. macro_avg is %.6f%%' % (
-			epoch_num, acc * 100, micro_f * 100, macro_f * 100
+		print('Now at epoch %d. acc is %.6f%%. micro_avg is %.6f%%. macro_avg is %.6f%%. loss is %.6f.' % (
+			epoch_num, acc * 100, micro_f * 100, macro_f * 100, loss_tot / len(test_data)
 		))
 
 if __name__ == '__main__':

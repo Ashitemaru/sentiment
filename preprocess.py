@@ -1,7 +1,7 @@
 import os
 
-file_path_prefix = '/Users/ashitemaru/Downloads/CodingFolder/SophomoreSpring/sentiment/data/isear_v2/'
-new_file_path_prefix = '/Users/ashitemaru/Downloads/CodingFolder/SophomoreSpring/sentiment/data/processed_isear_v2/'
+file_path_prefix = '/home/qianhoude/sentiment/data/correct_isear_v2/'
+new_file_path_prefix = '/home/qianhoude/sentiment/data/processed_isear_v2/'
 file_path_suffix = ['isear_test.csv', 'isear_train.csv', 'isear_valid.csv']
 
 def split_sentence(sentence):
