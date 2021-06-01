@@ -1,8 +1,8 @@
 import torch
-from config import config
 
-embed_dim = config()['embed_dim']
-class_num = config()['class_num']
+embed_dim = 768
+class_num = 7
+lstm_layers = 6
 
 class LSTMModel(torch.nn.Module):
 	def __init__(self):
@@ -10,15 +10,15 @@ class LSTMModel(torch.nn.Module):
 		self.core = torch.nn.LSTM(
 			input_size = embed_dim,
 			hidden_size = embed_dim,
-			num_layer = 6,
+			num_layers = lstm_layers,
 		)
-		self.classifier = torch.nn.Linear(embed_dim, class_num)
-		self.norm = torch.nn.Softmax()
+		self.classifier = torch.nn.Linear(embed_dim * lstm_layers, class_num)
 
 	def forward(self, x):
-		x = self.core(x)
+		_, (x, __) = self.core(x)
+		x = torch.cat([x[ind] for ind in range(lstm_layers)], dim = 1)
 		x = self.classifier(x)
-		return torch.nn.functional.softmax(x)
+		return torch.nn.functional.softmax(x, dim = 1)
 
 def main():
 	pass

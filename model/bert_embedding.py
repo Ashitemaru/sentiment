@@ -1,8 +1,7 @@
 import transformers
 import torch
-from config import config
 
-device = config()['device']
+device = 'cuda:0'
 
 class BERTEmbedding(torch.nn.Module):
 	def __init__(self):
