@@ -2,7 +2,7 @@ import torch
 
 # Config
 vocab_path = '/home/qianhoude/sentiment/data/vocab.txt'
-embed_size = 128
+embed_size = 100
 device = 'cuda:0'
 
 def load_vocab():
@@ -20,7 +20,7 @@ def load_vocab():
 
 class TorchEmbedding(torch.nn.Module):
 	def __init__(self):
-		super().__init__()
+		super(TorchEmbedding, self).__init__()
 		# Get the vocab
 		self.vocab = load_vocab()
 

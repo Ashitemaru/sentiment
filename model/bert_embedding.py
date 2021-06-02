@@ -5,7 +5,7 @@ device = 'cuda:0'
 
 class BERTEmbedding(torch.nn.Module):
 	def __init__(self):
-		super().__init__()
+		super(BERTEmbedding, self).__init__()
 		self.tokenizer = transformers.BertTokenizer.from_pretrained('bert-base-cased')
 		self.bert_core = transformers.BertModel.from_pretrained('bert-base-cased')
 

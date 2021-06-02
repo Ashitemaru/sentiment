@@ -23,7 +23,7 @@ finetune_model_path = '/home/qianhoude/sentiment/save/LSTM.pth'
 
 # The function to get the learning rate
 def lr_func(epoch):
-	return 1e-4
+	return 1e-2
 
 # Do not adjust codes below
 sentiments = {
@@ -120,7 +120,7 @@ def main():
 			optim.step()
 
 		# Print data of training
-		print('Traning ended. The loss is %.6f. The acc on train set is %.6f%%.' % (
+		print('Training ended. The loss is %.6f. The acc on train set is %.6f%%.' % (
 			loss_tot / len(train_data), acc / len(train_data) * 100
 		))
 
