@@ -1,6 +1,7 @@
 from model.bert_embedding import BERTEmbedding
 from model.torch_embedding import TorchEmbedding
 from model.lstm import LSTMModel
+from model.cnn import BaseCNN
 import torch
 import math
 from tqdm import tqdm
@@ -10,20 +11,20 @@ device = 'cuda:0'
 batch_size = 13
 class_num = 7
 epoch = 20
-fix_embedding = True
-is_finetune = False
+fix_embedding = False
+is_finetune = True
 
 use_embedding = BERTEmbedding()
-use_core = LSTMModel()
+use_core = BaseCNN()
 
 data_file_path_prefix = '/home/qianhoude/sentiment/data/processed_isear_v2/'
 data_file_path_suffix = ['isear_test.txt', 'isear_train.txt', 'isear_valid.txt']
-model_save_path = '/home/qianhoude/sentiment/save/LSTM.pth'
+model_save_path = '/home/qianhoude/sentiment/save/LSTM_finetune.pth'
 finetune_model_path = '/home/qianhoude/sentiment/save/LSTM.pth'
 
 # The function to get the learning rate
 def lr_func(epoch):
-	return 1e-2
+	return 1e-4
 
 # Do not adjust codes below
 sentiments = {

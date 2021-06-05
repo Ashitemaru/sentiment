@@ -1,13 +1,13 @@
 import torch
 
 embed_dim = 768
-lstm_hidden_size = 100
+lstm_hidden_size = 768
 class_num = 7
-lstm_layers = 2
+lstm_layers = 6
 is_bidirectional = True
 
 # This param controls how many layers will be picked
-filter_layer_num = 2
+filter_layer_num = 6
 
 class LSTMModel(torch.nn.Module):
 	def __init__(self):
