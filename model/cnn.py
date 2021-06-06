@@ -14,8 +14,7 @@ class ModifiedMaxPool1d(torch.nn.Module):
 	
 	def forward(self, x):
 		return torch.nn.functional.max_pool1d(
-			x,
-			kernel_size = x.size()[2]
+			x, kernel_size = x.size()[2]
 		)
 
 class BaseCNN(torch.nn.Module):
